@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal|center"
+    xmlns:tools="http://schemas.android.com/tools">
+
+   <TableLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_gravity="center_vertical"
+       android:layout_marginLeft="90dp">
+
+       <TableRow>
+            <Button
+                android:id="@+id/january"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/dashed_btn"
+                android:text="January"/>
+
+           <Button
+               android:id="@+id/april"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:background="@drawable/dashed_btn"
+               android:layout_marginLeft="20dp"
+               android:text="April"/>
+       </TableRow>
+
+       <TableRow
+           android:layout_marginTop="5dp">
+           <Button
+               android:id="@+id/february"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:background="@drawable/dashed_btn"
+               android:text="February"/>
+
+           <Button
+               android:id="@+id/may"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:background="@drawable/dashed_btn"
+               android:layout_marginLeft="20dp"
+               android:text="May"/>
+       </TableRow>
+       <TableRow
+           android:layout_marginTop="5dp">
+           <Button
+               android:id="@+id/march"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:background="@drawable/dashed_btn"
+               android:text="March"/>
+
+           <Button
+               android:id="@+id/june"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:background="@drawable/dashed_btn"
+               android:layout_marginLeft="20dp"
+               android:text="June"/>
+       </TableRow>
+
+       <TableRow
+           android:layout_marginTop="35dp">
+           <Button
+               android:id="@+id/july"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:background="@drawable/dashed_btn"
+               android:text="July"/>
+
+           <Button
+               android:id="@+id/october"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:background="@drawable/dashed_btn"
+               android:layout_marginLeft="20dp"
+               android:text="October"/>
+       </TableRow>
+       <TableRow
+           android:layout_marginTop="5dp">
+           <Button
+               android:id="@+id/august"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:background="@drawable/dashed_btn"
+               android:text="August"/>
+
+           <Button
+               android:id="@+id/november"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:background="@drawable/dashed_btn"
+               android:layout_marginLeft="20dp"
+               android:text="November"/>
+       </TableRow>
+       <TableRow
+           android:layout_marginTop="5dp">
+           <Button
+               android:id="@+id/september"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:background="@drawable/dashed_btn"
+               android:text="September"/>
+
+           <Button
+               android:id="@+id/december"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:background="@drawable/dashed_btn"
+               android:layout_marginLeft="20dp"
+               android:text="December"/>
+       </TableRow>
+   </TableLayout>
+
+</FrameLayout>
