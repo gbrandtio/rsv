@@ -192,7 +192,6 @@ public class AdapterCars extends RecyclerView.Adapter<AdapterCars.ViewHolder> {
                     ActivityCategoryCars.list.add(tempData.get(i));
                 }
             }
-            //NestedFragmentRSVs.list.addAll(tempData);
         } else {
             for (Car car : tempData) {
                 if (car.getName().toLowerCase(Locale.ENGLISH).contains(charText)) {
