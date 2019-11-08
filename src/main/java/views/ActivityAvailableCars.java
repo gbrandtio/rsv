@@ -41,7 +41,7 @@ public class ActivityAvailableCars extends AppCompatActivity implements SearchVi
     private SearchView searchView;
     private SearchView.OnQueryTextListener queryTextListener;
     AdapterAvailableCars adapter;
-    private String day_start,hour_start,day_end,hour_end;
+    private String day_start,hour_start,day_end,hour_end,edit_rsv,edit_client_id,edit_rsv_id;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,6 +63,9 @@ public class ActivityAvailableCars extends AppCompatActivity implements SearchVi
         hour_start = intent.getStringExtra("START_HOUR");
         day_end = intent.getStringExtra("DATE_END");
         hour_end = intent.getStringExtra("END_HOUR");
+        edit_rsv = intent.getStringExtra("EDIT_RSV");
+        edit_client_id = intent.getStringExtra("EDIT_CLIENT_ID");
+        edit_rsv_id = intent.getStringExtra("EDIT_RSV_ID");
 
         url = context.getResources().getString(R.string.base_url)
                 +context.getResources().getString(R.string.returnAvailableCars)+day_start
@@ -129,6 +132,10 @@ public class ActivityAvailableCars extends AppCompatActivity implements SearchVi
         intent.putExtra("HOUR_START",hour_start);
         intent.putExtra("DATE_END",day_end);
         intent.putExtra("HOUR_END",hour_end);
+        intent.putExtra("EDIT_RSV",edit_rsv);
+        intent.putExtra("EDIT_CLIENT_ID",edit_client_id);
+        intent.putExtra("EDIT_RSV_ID",edit_rsv_id);
+
         startActivity(intent);
     }
 
