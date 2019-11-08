@@ -22,7 +22,7 @@ public class ActivitySetDates extends AppCompatActivity {
     private ArrayList<String> listDays,listMonths,listYears,listHours,listMinutes;
     Spinner spinnerDayStart,spinnerMonthStart,spinnerYearStart,spinnerHourStart,spinnerMinutesStart;
     Spinner spinnerDayEnd,spinnerMonthEnd,spinnerYearEnd,spinnerHourEnd,spinnerMinutesEnd;
-
+    private String edit_rsv,edit_client_id,edit_rsv_id;
     Button btnCheckAvailability;
 
     @Override
@@ -38,6 +38,11 @@ public class ActivitySetDates extends AppCompatActivity {
         actionbar.setDisplayHomeAsUpEnabled(true);
 
         btnCheckAvailability = (Button) findViewById(R.id.btn_check_available_cars);
+
+        Intent intent = getIntent();
+        edit_rsv = intent.getStringExtra("EDIT_RSV");
+        edit_client_id = intent.getStringExtra("EDIT_CLIENT_ID");
+        edit_rsv_id = intent.getStringExtra("EDIT_RSV_ID");
 
         listDays = new ArrayList<>();
         listMonths = new ArrayList<>();
@@ -64,13 +69,37 @@ public class ActivitySetDates extends AppCompatActivity {
         spinnerDayStart = (Spinner) findViewById(R.id.day_start_spinner);
         spinnerDayEnd = (Spinner) findViewById(R.id.day_end_spinner);
 
-        listDays.add("Monday");
-        listDays.add("Tuesday");
-        listDays.add("Wednesday");
-        listDays.add("Thursday");
-        listDays.add("Friday");
-        listDays.add("Saturday");
-        listDays.add("Sunday");
+        listDays.add("01");
+        listDays.add("02");
+        listDays.add("03");
+        listDays.add("04");
+        listDays.add("05");
+        listDays.add("06");
+        listDays.add("07");
+        listDays.add("08");
+        listDays.add("09");
+        listDays.add("10");
+        listDays.add("11");
+        listDays.add("12");
+        listDays.add("13");
+        listDays.add("14");
+        listDays.add("15");
+        listDays.add("16");
+        listDays.add("17");
+        listDays.add("18");
+        listDays.add("19");
+        listDays.add("20");
+        listDays.add("21");
+        listDays.add("22");
+        listDays.add("23");
+        listDays.add("24");
+        listDays.add("25");
+        listDays.add("26");
+        listDays.add("27");
+        listDays.add("28");
+        listDays.add("29");
+        listDays.add("30");
+        listDays.add("31");
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, listDays);
@@ -155,38 +184,7 @@ public class ActivitySetDates extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String day_start = spinnerDayStart.getSelectedItem().toString();
-                if (day_start.equals("Monday")){
-                    day_start="01";
-                }else if (day_start.equals("Tuesday")){
-                    day_start="02";
-                }else if (day_start.equals("Wednesday")){
-                    day_start="03";
-                }else if (day_start.equals("Thursday")){
-                    day_start="04";
-                }else if (day_start.equals("Friday")){
-                    day_start="05";
-                }else if (day_start.equals("Saturday")){
-                    day_start="06";
-                }else if (day_start.equals("Sunday")){
-                    day_start="07";
-                }
-
                 String day_end = spinnerDayEnd.getSelectedItem().toString();
-                if (day_end.equals("Monday")){
-                    day_end="01";
-                }else if (day_end.equals("Tuesday")){
-                    day_end="02";
-                }else if (day_end.equals("Wednesday")){
-                    day_end="03";
-                }else if (day_end.equals("Thursday")){
-                    day_end="04";
-                }else if (day_end.equals("Friday")){
-                    day_end="05";
-                }else if (day_start.equals("Saturday")){
-                    day_end="06";
-                }else if (day_start.equals("Sunday")){
-                    day_end="07";
-                }
 
                 String month_start = spinnerMonthStart.getSelectedItem().toString();
                 if(month_start.equals("January")){
@@ -257,10 +255,16 @@ public class ActivitySetDates extends AppCompatActivity {
                 String start_hour = hour_start + ":" +minute_start;
                 String end_hour = hour_end + ":" + minute_end;
 
+                System.out.println("DATE START: " + date_start);
+                System.out.println("DATE END: " + date_end);
+
                 intent.putExtra("DATE_START",date_start);
                 intent.putExtra("START_HOUR",start_hour);
                 intent.putExtra("DATE_END",date_end);
-                intent.putExtra("HOUR_END",end_hour);
+                intent.putExtra("END_HOUR",end_hour);
+                intent.putExtra("EDIT_RSV",edit_rsv);
+                intent.putExtra("EDIT_CLIENT_ID",edit_client_id);
+                intent.putExtra("EDIT_RSV_ID",edit_rsv_id);
 
                 startActivity(intent);
 
