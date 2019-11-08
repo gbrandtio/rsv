@@ -1,6 +1,7 @@
 package com.example.root.rsv.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +12,10 @@ import com.example.root.rsv.models.RSV;
 import com.example.root.rsv.R;
 import com.example.root.rsv.fragments.NestedFragmentRSVs;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -45,11 +49,30 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.ViewHolder> {
         String date = mData.get(position).getDay_start();
         date = date + " / " + mData.get(position).getDay_end();
         String client = mData.get(position).getClient_id();
+        String date_start = mData.get(position).getDay_start();
+        String date_end = mData.get(position).getDay_end();
 
         holder.tvRsvId.setText(id);
         holder.tvCar.setText(car_name);
         holder.tvClient.setText(client);
         holder.tvDate.setText(date);
+
+        Date today = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
+        Date tomorrow = calendar.getTime();
+
+        SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy-MM-dd");
+
+        if(date_start.equals(formatter.format(today).toString()) || date_start.equals(formatter1.format(tomorrow))){
+            holder.tvStatus.setText("STARTING");
+            holder.tvStatus.setTextColor(Color.GREEN);
+        }
+        else {
+            holder.tvStatus.setTextColor(Color.RED);
+            holder.tvStatus.setText("ENDING");
+        }
     }
 
     // total number of rows
@@ -61,7 +84,7 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.ViewHolder> {
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView tvRsvId,tvCar,tvDate,tvClient;
+        TextView tvRsvId,tvCar,tvDate,tvClient,tvStatus;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -69,6 +92,7 @@ public class AdapterFeed extends RecyclerView.Adapter<AdapterFeed.ViewHolder> {
             tvCar  = itemView.findViewById(R.id.label_rsv_car);
             tvDate = itemView.findViewById(R.id.label_rsv_date);
             tvClient = itemView.findViewById(R.id.label_rsv_client);
+            tvStatus = itemView.findViewById(R.id.label_rsv_status);
 
             itemView.setOnClickListener(this);
         }
