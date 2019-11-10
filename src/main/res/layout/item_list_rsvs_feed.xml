@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        card_view:cardBackgroundColor="@color/white"
+        card_view:cardCornerRadius="10dp"
+        card_view:cardElevation="5dp"
+        android:layout_marginLeft="15dp"
+        card_view:cardUseCompatPadding="true">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:tag="image_tag"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="5dp"
+                android:paddingTop="25dp"
+                android:layout_weight="1"
+                android:src="@drawable/rsv_app"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="100dp"
+            android:padding="15dp"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginTop="5dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:text="ID#"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                    <TextView
+                        android:id="@+id/label_rsv_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:text="RESERVATION ID"
+                        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginTop="2dp"
+                        android:text="Client:"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                    <TextView
+                        android:id="@+id/label_rsv_client"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginLeft="5dp"
+                        android:textColor="@color/black"
+                        android:text="CLIENT INFO"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginTop="2dp"
+                        android:text="Car:"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                    <TextView
+                        android:id="@+id/label_rsv_car"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginLeft="5dp"
+                        android:textColor="@color/black"
+                        android:text="CAR"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginTop="2dp"
+                        android:text="Date:"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                    <TextView
+                        android:id="@+id/label_rsv_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginLeft="5dp"
+                        android:textColor="@color/black"
+                        android:text="DATE"
+                        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginTop="2dp"
+                    android:text="Time:"
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+                <TextView
+                    android:id="@+id/label_rsv_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/black"
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/label_rsv_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_gravity="center_horizontal" />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>
