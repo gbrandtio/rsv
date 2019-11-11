@@ -4,7 +4,7 @@
 * This is the REST API for the RSVs App.
 * It supports various CRUD Requests and algorithms for Car Rentals Reservations/Bookings Management.
 * 
-* @author: Ioannis Brant Ioannidis <giannisbr@gmail.com>
+* @author: Ioannis Brant Ioannidis <giannisbrant@gmail.com>
 */
 
 //Connect to the database.
