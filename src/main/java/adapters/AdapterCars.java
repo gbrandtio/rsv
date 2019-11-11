@@ -11,8 +11,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +32,7 @@ import com.example.root.rsv.models.Car;
 import com.example.root.rsv.models.RSV;
 import com.example.root.rsv.R;
 import com.example.root.rsv.fragments.NestedFragmentRSVs;
+import com.example.root.rsv.models.ServiceInfo;
 import com.example.root.rsv.models.SingleCarStats;
 import com.example.root.rsv.views.ActivityCategoryCars;
 import com.example.root.rsv.views.ActivityEditCar;
@@ -48,6 +52,7 @@ public class AdapterCars extends RecyclerView.Adapter<AdapterCars.ViewHolder> {
 
     private List<Car> mData;
     private List<Car> tempData;
+    private List<String> listDays,listMonths,listYears;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
     private Context context;
@@ -59,7 +64,9 @@ public class AdapterCars extends RecyclerView.Adapter<AdapterCars.ViewHolder> {
         this.context = context;
         tempData = new ArrayList<>();
         tempData.addAll(mData);
-
+        listDays = new ArrayList<>();
+        listMonths = new ArrayList<>();
+        listYears = new ArrayList<>();
     }
 
     // inflates the row layout from xml when needed
@@ -125,6 +132,45 @@ public class AdapterCars extends RecyclerView.Adapter<AdapterCars.ViewHolder> {
                 getStats(id,holder);
             }
         });
+
+        holder.btnService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Dialog serviceDialog = new Dialog(context);
+                serviceDialog.setContentView(R.layout.car_service_popup);
+                holder.tvServiceName = (TextView) serviceDialog.findViewById(R.id.car_service_name);
+                holder.tvServiceCategory = (TextView) serviceDialog.findViewById(R.id.car_service_category);
+                holder.tvServicePrevious = (TextView) serviceDialog.findViewById(R.id.car_service_previous_service);
+                holder.tvServiceNext = (TextView) serviceDialog.findViewById(R.id.car_service_next_service);
+                holder.tvCloseServiceDialog = (TextView) serviceDialog.findViewById(R.id.car_service_close_dialog);
+                holder.tvCloseServiceDialog.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        serviceDialog.dismiss();
+                    }
+                });
+                holder.spServiceDay = (Spinner) serviceDialog.findViewById(R.id.day_spinner_service);
+                holder.spServiceMonth = (Spinner) serviceDialog.findViewById(R.id.month_spinner_service);
+                holder.spServiceYear = (Spinner) serviceDialog.findViewById(R.id.year_spinner_service);
+                addValuesToSpinners(holder.spServiceDay,holder.spServiceMonth,holder.spServiceYear);
+                holder.btnScheduleService = (Button) serviceDialog.findViewById(R.id.btn_schedule_service);
+                holder.btnScheduleService.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String day = holder.spServiceDay.getSelectedItem().toString();
+                        String month = holder.spServiceMonth.getSelectedItem().toString();
+                        String year = holder.spServiceYear.getSelectedItem().toString();
+                        String date = year + "-" + month + "-" + day;
+                        scheduleService(id,date);
+                    }
+                });
+
+                serviceDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                serviceDialog.show();
+
+                getServiceInfo(id,holder);
+            }
+        });
     }
 
     // total number of rows
@@ -138,6 +184,9 @@ public class AdapterCars extends RecyclerView.Adapter<AdapterCars.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView tvCarName,tvKms,tvLicensePlate,tvCategory;
         TextView tvStatsName,tvStatsCategory,tvYearlyRsvs,tvMonthlyRsvs,tvPreviousService,tvNextService,tvNationalityPercentage,tvCloseDialog;
+        TextView tvServiceName,tvServiceCategory,tvServicePrevious,tvServiceNext,tvCloseServiceDialog;
+        Spinner spServiceDay,spServiceMonth,spServiceYear;
+        Button btnScheduleService;
         ImageButton btnEditCar,btnDeleteCar,btnStats,btnService;
 
         ViewHolder(View itemView) {
@@ -176,10 +225,81 @@ public class AdapterCars extends RecyclerView.Adapter<AdapterCars.ViewHolder> {
         void onItemClick(View view, int position);
     }
 
+    public void scheduleService(String car_id,String date){
+        String url = context.getResources().getString(R.string.base_url)+context.getString(R.string.scheduleService);
+
+        // Creating string request with post method.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String ServerResponse) {
+                        Intent intent = new Intent(context, MainActivity.class);
+                        intent.putExtra("SUCCESS","YES");
+                        context.startActivity(intent);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        // Showing error message if something goes wrong.
+                        Toast.makeText(context, "Error.The service has not been scheduled.", Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                // Creating Map String Params.
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("car_id", car_id);
+                params.put("date",date);
+                return params;
+            }
+
+        };
+        // Creating RequestQueue.
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        // Adding the StringRequest object into requestQueue.
+        requestQueue.add(stringRequest);
+    }
+
+
+    public void getServiceInfo(String car_id,ViewHolder holder){
+        String url = context.getResources().getString(R.string.base_url) +
+                    context.getResources().getString(R.string.carService) + car_id;
+        System.out.println(url);
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                for (int i = 0; i < response.length(); i++) {
+                    try {
+                        JSONObject jsonObject = response.getJSONObject(i);
+                        ServiceInfo serviceInfo = new ServiceInfo(
+                                jsonObject.getString("name"),jsonObject.getString("category"),
+                                jsonObject.getString("license_plate"),
+                                jsonObject.getString("previous_service"),jsonObject.getString("next_service")
+                        );
+                        holder.tvServiceName.setText(serviceInfo.getName() + "\n" + serviceInfo.getLicense_plate());
+                        holder.tvServiceCategory.setText("Category: " + serviceInfo.getCategory());
+                        holder.tvServicePrevious.setText(serviceInfo.getPrevious_service());
+                        holder.tvServiceNext.setText(serviceInfo.getNext_service());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("CarSer", error.toString());
+            }
+        });
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        requestQueue.add(jsonArrayRequest);
+    }
+
     public void getStats(String id,ViewHolder holder){
         String url = context.getResources().getString(R.string.base_url) +
                      context.getResources().getString(R.string.singleCarStats) + id;
-        System.out.println("EXECUTED: " + id);
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -211,7 +331,7 @@ public class AdapterCars extends RecyclerView.Adapter<AdapterCars.ViewHolder> {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("SiCarSt", error.toString());
+                Log.e("CarSe1", error.toString());
             }
         });
         RequestQueue requestQueue = Volley.newRequestQueue(context);
@@ -263,6 +383,74 @@ public class AdapterCars extends RecyclerView.Adapter<AdapterCars.ViewHolder> {
         RequestQueue requestQueue = Volley.newRequestQueue(context);
         // Adding the StringRequest object into requestQueue.
         requestQueue.add(stringRequest);
+    }
+
+    public void addValuesToSpinners(Spinner spServiceDay,Spinner spServiceMonth,Spinner spServiceYear){
+        listDays.add("01");
+        listDays.add("02");
+        listDays.add("03");
+        listDays.add("04");
+        listDays.add("05");
+        listDays.add("06");
+        listDays.add("07");
+        listDays.add("08");
+        listDays.add("09");
+        listDays.add("10");
+        listDays.add("11");
+        listDays.add("12");
+        listDays.add("13");
+        listDays.add("14");
+        listDays.add("15");
+        listDays.add("16");
+        listDays.add("17");
+        listDays.add("18");
+        listDays.add("19");
+        listDays.add("20");
+        listDays.add("21");
+        listDays.add("22");
+        listDays.add("23");
+        listDays.add("24");
+        listDays.add("25");
+        listDays.add("26");
+        listDays.add("27");
+        listDays.add("28");
+        listDays.add("29");
+        listDays.add("30");
+        listDays.add("31");
+
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(context,
+                android.R.layout.simple_spinner_item, listDays);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spServiceDay.setAdapter(dataAdapter);
+
+
+        listMonths.add("January");listMonths.add("February");
+        listMonths.add("March");listMonths.add("April");
+        listMonths.add("May");listMonths.add("June");
+        listMonths.add("July");listMonths.add("August");
+        listMonths.add("September");listMonths.add("October");
+        listMonths.add("November");listMonths.add("December");
+
+        ArrayAdapter<String> dataAdapter1 = new ArrayAdapter<String>(context,
+                android.R.layout.simple_spinner_item, listMonths);
+        dataAdapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spServiceMonth.setAdapter(dataAdapter1);
+
+
+        listYears.add("2019");listYears.add("2020");
+        listYears.add("2021");listYears.add("2022");
+        listYears.add("2023");listYears.add("2024");
+        listYears.add("2025");listYears.add("2026");
+        listYears.add("2027");listYears.add("2028");
+        listYears.add("2029");listYears.add("2030");listYears.add("2031");
+
+        ArrayAdapter<String> dataAdapter2 = new ArrayAdapter<String>(context,
+                android.R.layout.simple_spinner_item, listYears);
+        dataAdapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spServiceYear.setAdapter(dataAdapter2);
     }
 
     // Filter Class
