@@ -597,6 +597,47 @@ VALUES ($id, $car_id, $client_id,'$day_start','$hour_start','$day_end','$hour_en
 	  $sql_schedule_service = "INSERT INTO service (id,car_id,date) VALUES ($id,$car_id,'$date')";
 	  $result_schedule_service = $mysqli->query($sql_schedule_service);
   }
+//-----------------------------------------------------------------------------------------------------NOTIFICATIONS
+  //route("/notify")
+  elseif($_GET['url'] == "notify"){
+	$user_id = $_POST['userid'];$user_id=0;
+	$type = $_POST['type'];
+	$text_message = $_POST['message'];
+	$date = date('Y-m-d');
+	$device_id = $_POST['device_id'];
+	  
+	$tomorrow = date('Y-m-d', strtotime($date .' +1 day'));
+	$after_one_week = date('Y-m-d', strtotime($date .' +7 days'));
+	  
+	$sql_check_upcoming_rsvs = "SELECT * FROM reservations WHERE day_start='$tomorrow'";
+    $result_check_upcoming_rsvs = $mysqli->query($sql_check_upcoming_rsvs);
+	if($result_check_upcoming_rsvs->num_rows>0){
+		notify($user_id,"UPCOMING RESERVATION(s)","You have reservation(s) that start tomorrow.",$date,$device_id);
+	}
+	  
+	$sql_check_ending_rsvs = "SELECT * FROM reservations WHERE day_end='$tomorrow'";
+	$result_check_ending_rsvs = $mysqli->query($sql_check_ending_rsvs);
+	if($result_check_ending_rsvs->num_rows>0){
+		notify($user_id,"ENDING RESERVATION(s)","You have reservation(s) that end tomorrow.",$date,$device_id);
+	}
+	  
+	$sql_check_upcoming_service = "SELECT * FROM service WHERE date='$after_one_week'";
+	$result_check_upcoming_service = $mysqli->query($sql_check_upcoming_service);
+	if($result_check_upcoming_service->num_rows>0){
+		notify($user_id,"UPCOMING SERVICE","You have an upcoming car service in 7 days.",$date,$device_id);
+	}
+  }
+  //route("/getNotifications")
+  elseif($_GET['url'] == "getNotifications"){
+	  $sql_get_notifications = "SELECT * FROM notifications";
+	  $result_get_notifications = $mysqli->query($sql_get_notifications);
+	  if($result_get_notifications->num_rows>0){
+		  while($row = mysqli_fetch_assoc($result_get_notifications)){
+			  $json[] = $row;
+		  }
+		  echo json_encode($json);
+	  }
+  }
 //-------------------------------------------------------------------------------------------------STATISTICS FOR CARS
 
 //-------------------------------------------------------------------------------------------------STATISTICS FOR CLIENTS
@@ -683,6 +724,32 @@ function carIsAvailable($car_id,$day_start,$hour_start,$day_end,$hour_end){
 			return true;	
 		}
 	}	
+}
+/**
+* This function is used to notify a specific user of the application about an event (e.g. upcoming reservation,ending reservation
+* or an upcoming car service.
+*/
+function notify($user_id,$type,$text_message,$date,$device_id){
+	global $mysqli;
+	define( 'API_ACCESS_KEY', '$device_id' );
+	$data = array("to" => "$device_id", "notification" => array( "title" => "$type", "body" => "$text_message","icon" => "icon.png", "click_action" => "http://shareurcodes.com")); 
+	$data_string = json_encode($data); 
+	
+	$headers = array ( 'Authorization: key=' . API_ACCESS_KEY, 'Content-Type: application/json' ); 
+	$ch = curl_init(); curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' ); 
+	curl_setopt( $ch,CURLOPT_POST, true ); 
+	curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers ); 
+	curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true ); 
+	curl_setopt( $ch,CURLOPT_POSTFIELDS, $data_string); 
+	$result = curl_exec($ch); 
+	curl_close ($ch); 
+
+	$created_date = date('Y-m-d');
+	$sql = "INSERT INTO notifications (userid,type,message,date) VALUES ($user_id,'$type','$message','$date','$created_date')";
+	if($mysqli->query($sql)){
+		return 200;
+	}
+	else return 500;
 }
 /**
 * This function is used to sort the available cars for a reservation in descending order based on the number of the total
