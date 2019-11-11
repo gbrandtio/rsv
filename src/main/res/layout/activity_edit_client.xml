@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:logo="@drawable/rsv"
+            android:background="@color/white"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+        </android.support.v7.widget.Toolbar>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="20dp"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:padding="5dp"
+                android:text="Name:"/>
+
+            <EditText
+                android:id="@+id/edit_client_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/dashed_btn"
+                android:padding="10dp"
+                android:hint="Client's Name"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:padding="5dp"
+                android:text="E-mail:"/>
+
+            <EditText
+                android:id="@+id/edit_client_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/dashed_btn"
+                android:layout_marginTop="10dp"
+                android:padding="10dp"
+                android:inputType="number"
+                android:hint="Client's e-mail"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:padding="5dp"
+                android:text="Telephone:"/>
+
+            <EditText
+                android:id="@+id/edit_client_telephone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/dashed_btn"
+                android:layout_marginTop="10dp"
+                android:padding="10dp"
+                android:inputType="number"
+                android:hint="Client's Telephone"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:padding="5dp"
+                android:text="Nationality:"/>
+
+            <EditText
+                android:id="@+id/edit_client_nationality"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/dashed_btn"
+                android:layout_marginTop="10dp"
+                android:padding="10dp"
+                android:hint="Client's Nationality"/>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_edit_client"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/dashed_btn"
+            android:layout_gravity="center_horizontal"
+            android:padding="10dp"
+            android:text="Save Changes"/>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="50sp"
+            android:layout_gravity="center_vertical|center|center_horizontal"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</ScrollView>
