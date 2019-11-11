@@ -259,7 +259,7 @@ VALUES ($id, $car_id, $client_id,'$day_start','$hour_start','$day_end','$hour_en
            }
          }
       }
-	  //fetch and return all reservations that have been made in every car for a given month.
+	  //Fetch and return all reservations that have been made in every car for a given month.
 	  foreach($cars as $car){
 		  	$car_id = $car['id'];
 			$sql = "SELECT reservations.*,clients.name as client_name,cars.name as car_name FROM reservations LEFT JOIN clients ON client_id=clients.id LEFT JOIN cars ON car_id=cars.id WHERE car_id=$car_id AND MONTH(day_start)='$month'";
@@ -483,9 +483,9 @@ VALUES ($id, $car_id, $client_id,'$day_start','$hour_start','$day_end','$hour_en
 	  }
 	  else $nationality_percentage=0;
 	  
-	  //Last time this car has been serviced.
+	  //Previous service.
 	  $date = date('Y-m-d');
-	  $sql_previous_service = "SELECT * FROM service WHERE date<'$date' AND car_id=$car_id";
+	  $sql_previous_service = "SELECT * FROM service WHERE date<'$date' AND car_id=$car_id ORDER BY date DESC LIMIT 1";
 	  $result_previous_service = $mysqli->query($sql_previous_service);
 	  if ($result_previous_service->num_rows == 0){
           $previous_service_date = 'unset';
@@ -498,7 +498,7 @@ VALUES ($id, $car_id, $client_id,'$day_start','$hour_start','$day_end','$hour_en
         }
 	  
 	  //Next upcoming service.
-	  $sql_upcoming_service = "SELECT * FROM service WHERE date>'$date' AND car_id=$car_id";
+	  $sql_upcoming_service = "SELECT * FROM service WHERE date>'$date' AND car_id=$car_id ORDER BY date ASC LIMIT 1";
 	  $result_upcoming_service = $mysqli->query($sql_upcoming_service);
 	  if ($result_upcoming_service->num_rows == 0){
           $upcoming_service_date = 'unset';
@@ -533,6 +533,69 @@ VALUES ($id, $car_id, $client_id,'$day_start','$hour_start','$day_end','$hour_en
         else{
           echo http_response_code(500);
         } 
+  }
+//-------------------------------------------------------------------------------------------------CAR SERVICE
+  //route("/carService")
+  elseif($_GET['url'] == "carService"){
+	  //Returns the previous and the upcoming service of a car.
+	  $car_id = $_GET['id'];
+	   //Last time this car has been serviced.
+	  $date = date('Y-m-d');
+	  $sql_previous_service = "SELECT * FROM service WHERE date<'$date' AND car_id=$car_id ORDER BY date DESC LIMIT 1";
+	  $result_previous_service = $mysqli->query($sql_previous_service);
+	  if ($result_previous_service->num_rows == 0){
+          $previous_service_date = 'unset';
+        }elseif ($result_previous_service->num_rows > 0){
+          while($row = mysqli_fetch_assoc($result_previous_service)) {
+            if (!is_null($row)){
+              $previous_service_date = $row['date'];
+            }
+          }
+        }
+	  
+	  //Next upcoming service.
+	  $sql_upcoming_service = "SELECT * FROM service WHERE date>'$date' AND car_id=$car_id ORDER BY date ASC LIMIT 1";
+	  $result_upcoming_service = $mysqli->query($sql_upcoming_service);
+	  if ($result_upcoming_service->num_rows == 0){
+          $upcoming_service_date = 'unset';
+        }elseif ($result_upcoming_service->num_rows > 0){
+          while($row = mysqli_fetch_assoc($result_upcoming_service)) {
+            if (!is_null($row)){
+              $upcoming_service_date = $row['date'];
+            }
+          }
+        }
+	  
+	 //Return service info along with required car info.
+	 $sql_service_info = "SELECT name,category,license_plate FROM cars WHERE id=$car_id";
+	 $result_service_info = $mysqli->query($sql_service_info);
+	 if ($result_service_info->num_rows == 0){
+          $json='0';
+      }elseif ($result_service_info->num_rows > 0){
+        while($row = mysqli_fetch_assoc($result_service_info)) {
+         if (!is_null($row)){
+           $json[] = $row;
+         }
+       }
+	 }
+	 $json[0]['previous_service'] = $previous_service_date;
+	 $json[0]['next_service'] = $upcoming_service_date; 
+	 echo json_encode($json);
+  }
+  //route("/scheduleService")
+  elseif($_GET['url'] == "scheduleService"){
+	  $id = rand(1,120) + rand(1,310);
+	  $car_id = $_POST['car_id'];
+	  $date = $_POST['date'];
+	  
+	  //Delete the previous upcoming service from the database.
+	  $date = date('Y-m-d');
+	  $sql_delete_prev_upcoming = "DELETE FROM service WHERE date>$date AND car_id=$car_id";
+	  $result_delete_prev_upcoming = $mysqli->query($sql_delete_prev_upcoming);
+	  
+	  //Insert new upcoming service.
+	  $sql_schedule_service = "INSERT INTO service (id,car_id,date) VALUES ($id,$car_id,'$date')";
+	  $result_schedule_service = $mysqli->query($sql_schedule_service);
   }
 //-------------------------------------------------------------------------------------------------STATISTICS FOR CARS
 
