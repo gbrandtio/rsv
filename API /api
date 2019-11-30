@@ -225,7 +225,7 @@ VALUES ($id, $car_id, $client_id,'$day_start','$hour_start','$day_end','$hour_en
   elseif($_GET['url'] == "tomorrowReservations"){
 	  $date = date("Y-m-d");
 	  $next_date = date('Y-m-d', strtotime($date .' +1 day'));
-	  $sql = "SELECT reservations.*,clients.name as client_name,cars.name as car_name FROM reservations LEFT JOIN clients ON client_id=clients.id LEFT JOIN cars ON car_id=cars.id WHERE day_start='$next_date' OR day_end='$date' ORDER BY id";
+	  $sql = "SELECT reservations.*,clients.name as client_name,cars.name as car_name FROM reservations LEFT JOIN clients ON client_id=clients.id LEFT JOIN cars ON car_id=cars.id WHERE day_start='$next_date' OR day_end='$next_date' ORDER BY id";
 	  
 	  $result = $mysqli->query($sql);
         if ($result->num_rows == 0){
@@ -604,27 +604,35 @@ VALUES ($id, $car_id, $client_id,'$day_start','$hour_start','$day_end','$hour_en
 	$type = $_POST['type'];
 	$text_message = $_POST['message'];
 	$date = date('Y-m-d');
-	$device_id = $_POST['device_id'];
+	$device_id = $_POST['device_id'];$device_id = "DEVICE-ID";
 	  
 	$tomorrow = date('Y-m-d', strtotime($date .' +1 day'));
 	$after_one_week = date('Y-m-d', strtotime($date .' +7 days'));
+	
 	  
+	 
 	$sql_check_upcoming_rsvs = "SELECT * FROM reservations WHERE day_start='$tomorrow'";
     $result_check_upcoming_rsvs = $mysqli->query($sql_check_upcoming_rsvs);
 	if($result_check_upcoming_rsvs->num_rows>0){
 		notify($user_id,"UPCOMING RESERVATION(s)","You have reservation(s) that start tomorrow.",$date,$device_id);
+		$sql_insert_notif = "INSERT INTO notifications (userid,type,message,date,created_date) VALUES ($user_id,'$type','$text_message','$tomorrow','$date'";
+		$result_insert_notif = $mysqli->query($sql_insert_notif);
 	}
 	  
 	$sql_check_ending_rsvs = "SELECT * FROM reservations WHERE day_end='$tomorrow'";
 	$result_check_ending_rsvs = $mysqli->query($sql_check_ending_rsvs);
 	if($result_check_ending_rsvs->num_rows>0){
 		notify($user_id,"ENDING RESERVATION(s)","You have reservation(s) that end tomorrow.",$date,$device_id);
+		$sql_insert_notif = "INSERT INTO notifications (userid,type,message,date,created_date) VALUES ($user_id,'$type','$text_message','$tomorrow','$date'";
+		$result_insert_notif = $mysqli->query($sql_insert_notif);
 	}
 	  
 	$sql_check_upcoming_service = "SELECT * FROM service WHERE date='$after_one_week'";
 	$result_check_upcoming_service = $mysqli->query($sql_check_upcoming_service);
 	if($result_check_upcoming_service->num_rows>0){
 		notify($user_id,"UPCOMING SERVICE","You have an upcoming car service in 7 days.",$date,$device_id);
+		$sql_insert_notif = "INSERT INTO notifications (userid,type,message,date,created_date) VALUES ($user_id,'$type','$text_message','$after_one_week','$date'";
+		$result_insert_notif = $mysqli->query($sql_insert_notif);
 	}
   }
   //route("/getNotifications")
@@ -639,9 +647,93 @@ VALUES ($id, $car_id, $client_id,'$day_start','$hour_start','$day_end','$hour_en
 	  }
   }
 //-------------------------------------------------------------------------------------------------STATISTICS FOR CARS
+  //route("/carsByCategory")
+  else if($_GET['url']=="carsByCategory"){
+	  $category = $_GET['category'];
+	  $sql = 'SELECT COUNT(*) as total_rsvs,cars.category FROM archived_reservations LEFT JOIN cars ON archived_reservations.car_id=cars.id GROUP BY cars.category';
+	  $result = $mysqli->query($sql);
+	  if($result->num_rows==0){
+		echo "0";  
+	  }
+	  else if($result->num_rows>0){
+	   while($row = mysqli_fetch_assoc($result)) {
+         if (!is_null($row)){
+           $json[] = $row;
+         }
+       }
+		  echo json_encode($json);
+	  }
+  }
+  //route("/carsByCategoryAndMonth")
+  else if($_GET['url']=="carsByCategoryAndMonth"){
+	  $category = $_GET['category'];
+	  $month = $_GET['month'];
+	  $sql = "SELECT COUNT(*) as total_rsvs,cars.category FROM archived_reservations LEFT JOIN cars ON archived_reservations.car_id=cars.id GROUP BY MONTH(archived_reservations.day_start)";
+	  $result = $mysqli->query($sql);
+	  if($result->num_rows==0){
+		echo "0";  
+	  }
+	  else if($result->num_rows>0){
+	   while($row = mysqli_fetch_assoc($result)) {
+         if (!is_null($row)){
+           $json[] = $row;
+         }
+       }
+		  echo json_encode($json);
+	  }
+  }
+  //route("/carsByCategoryAndNationality")
+  else if($_GET['url']=="carsByCategoryAndNationality"){
+	  $category = $_GET['category'];
+	  $sql = 'SELECT COUNT(*) as total_rsvs,clients.nationality FROM archived_reservations LEFT JOIN cars ON reservations.car_id=cars.id LEFT JOIN clients ON reservations.client_id=clients.id GROUP BY clients.nationality,cars.category';
+	  
+	  $result = $mysqli->query($sql);
+	  if($result->num_rows==0){
+		echo "0";  
+	  }
+	  else if($result->num_rows>0){
+	   while($row = mysqli_fetch_assoc($result)) {
+         if (!is_null($row)){
+           $json[] = $row;
+         }
+       }
+		  echo json_encode($json);
+	  }
 
+  }
 //-------------------------------------------------------------------------------------------------STATISTICS FOR CLIENTS
-
+  //route("/clientsByNationalityAndMonth")
+  elseif($_GET['url']=="clientsByNationalityAndMonth"){
+	  $sql="SELECT COUNT(*) as total_rsvs,clients.nationality FROM archived_reservations LEFT JOIN clients ON archived_reservations.client_id=clients.id GROUP BY MONTH(archived_reservations.day_start),clients.nationality";
+	  $result = $mysqli->query($sql);
+	  if($result->num_rows==0){
+		echo "0";  
+	  }
+	  else if($result->num_rows>0){
+	   while($row = mysqli_fetch_assoc($result)) {
+         if (!is_null($row)){
+           $json[] = $row;
+         }
+       }
+		  echo json_encode($json);
+	  }
+  }
+  //route("/clientsByNationality")
+  elseif($_GET['url']=="clientsByNationality"){
+	  $sql = "SELECT COUNT(*) as total_clients,nationality FROM clients GROUP BY nationality";
+	  $result = $mysqli->query($sql);
+	  if($result->num_rows==0){
+		echo "0";  
+	  }
+	  else if($result->num_rows>0){
+	   while($row = mysqli_fetch_assoc($result)) {
+         if (!is_null($row)){
+           $json[] = $row;
+         }
+       }
+		  echo json_encode($json);
+	  }
+  }
 //-------------------------------------------------------------------------------------------------STATISTICS FOR RESERVATIONS
 
 
@@ -731,10 +823,10 @@ function carIsAvailable($car_id,$day_start,$hour_start,$day_end,$hour_end){
 */
 function notify($user_id,$type,$text_message,$date,$device_id){
 	global $mysqli;
-	define( 'API_ACCESS_KEY', '$device_id' );
+	define( 'API_ACCESS_KEY', 'API-ACCESS-KEY' );
 	$data = array("to" => "$device_id", "notification" => array( "title" => "$type", "body" => "$text_message","icon" => "icon.png", "click_action" => "http://shareurcodes.com")); 
 	$data_string = json_encode($data); 
-	
+	echo "The Json Data : ".$data_string; 
 	$headers = array ( 'Authorization: key=' . API_ACCESS_KEY, 'Content-Type: application/json' ); 
 	$ch = curl_init(); curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' ); 
 	curl_setopt( $ch,CURLOPT_POST, true ); 
@@ -743,7 +835,8 @@ function notify($user_id,$type,$text_message,$date,$device_id){
 	curl_setopt( $ch,CURLOPT_POSTFIELDS, $data_string); 
 	$result = curl_exec($ch); 
 	curl_close ($ch); 
-
+	echo "<p>&nbsp;</p>"; 
+	echo "The Result : ".$result;
 	$created_date = date('Y-m-d');
 	$sql = "INSERT INTO notifications (userid,type,message,date) VALUES ($user_id,'$type','$message','$date','$created_date')";
 	if($mysqli->query($sql)){
