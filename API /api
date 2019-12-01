@@ -604,7 +604,7 @@ VALUES ($id, $car_id, $client_id,'$day_start','$hour_start','$day_end','$hour_en
 	$type = $_POST['type'];
 	$text_message = $_POST['message'];
 	$date = date('Y-m-d');
-	$device_id = $_POST['device_id'];$device_id = "DEVICE-ID";
+	$device_id = $_POST['device_id'];
 	  
 	$tomorrow = date('Y-m-d', strtotime($date .' +1 day'));
 	$after_one_week = date('Y-m-d', strtotime($date .' +7 days'));
@@ -668,7 +668,7 @@ VALUES ($id, $car_id, $client_id,'$day_start','$hour_start','$day_end','$hour_en
   else if($_GET['url']=="carsByCategoryAndMonth"){
 	  $category = $_GET['category'];
 	  $month = $_GET['month'];
-	  $sql = "SELECT COUNT(*) as total_rsvs,cars.category FROM archived_reservations LEFT JOIN cars ON archived_reservations.car_id=cars.id GROUP BY MONTH(archived_reservations.day_start)";
+	  $sql = "SELECT MONTH(day_start) as month,COUNT(*) as total_rsvs,cars.category FROM archived_reservations LEFT JOIN cars ON archived_reservations.car_id=cars.id GROUP BY MONTH(archived_reservations.day_start)";
 	  $result = $mysqli->query($sql);
 	  if($result->num_rows==0){
 		echo "0";  
@@ -704,7 +704,7 @@ VALUES ($id, $car_id, $client_id,'$day_start','$hour_start','$day_end','$hour_en
 //-------------------------------------------------------------------------------------------------STATISTICS FOR CLIENTS
   //route("/clientsByNationalityAndMonth")
   elseif($_GET['url']=="clientsByNationalityAndMonth"){
-	  $sql="SELECT COUNT(*) as total_rsvs,clients.nationality FROM archived_reservations LEFT JOIN clients ON archived_reservations.client_id=clients.id GROUP BY MONTH(archived_reservations.day_start),clients.nationality";
+	  $sql="SELECT MONTH(day_start) as month,COUNT(*) as total_rsvs,clients.nationality FROM archived_reservations LEFT JOIN clients ON archived_reservations.client_id=clients.id GROUP BY MONTH(archived_reservations.day_start),clients.nationality";
 	  $result = $mysqli->query($sql);
 	  if($result->num_rows==0){
 		echo "0";  
@@ -735,7 +735,38 @@ VALUES ($id, $car_id, $client_id,'$day_start','$hour_start','$day_end','$hour_en
 	  }
   }
 //-------------------------------------------------------------------------------------------------STATISTICS FOR RESERVATIONS
-
+  //route("/avgRsvByCarCategory")
+  elseif($_GET['url'] == "avgRsvByCarCategory"){
+	  $sql = "SELECT cars.category,AVG(DATEDIFF(archived_reservations.day_end, archived_reservations.day_start)) as date_diff_avg FROM archived_reservations LEFT JOIN cars ON archived_reservations.car_id=cars.id GROUP BY cars.category";
+	  $result = $mysqli->query($sql);
+	  if($result->num_rows==0){
+		echo "0";  
+	  }
+	  else if($result->num_rows>0){
+	   while($row = mysqli_fetch_assoc($result)) {
+         if (!is_null($row)){
+           $json[] = $row;
+         }
+       }
+		  echo json_encode($json);
+	  }
+  }
+  //route("/avgRsvByMonth")
+  elseif($_GET['url'] == "avgRsvByMonth"){
+	  $sql = "SELECT cars.category,AVG(DATEDIFF(archived_reservations.day_end, archived_reservations.day_start)) as date_diff_avg FROM archived_reservations LEFT JOIN cars ON archived_reservations.car_id=cars.id GROUP BY MONTH(day_start)";
+	  $result = $mysqli->query($sql);
+	  if($result->num_rows==0){
+		echo "0";  
+	  }
+	  else if($result->num_rows>0){
+	   while($row = mysqli_fetch_assoc($result)) {
+         if (!is_null($row)){
+           $json[] = $row;
+         }
+       }
+		  echo json_encode($json);
+	  }
+  }
 
 //-------------------------------------------------------------------------------------------------FUNCTIONS
 /**
@@ -823,7 +854,7 @@ function carIsAvailable($car_id,$day_start,$hour_start,$day_end,$hour_end){
 */
 function notify($user_id,$type,$text_message,$date,$device_id){
 	global $mysqli;
-	define( 'API_ACCESS_KEY', 'API-ACCESS-KEY' );
+	define( 'API_ACCESS_KEY', 'key' );
 	$data = array("to" => "$device_id", "notification" => array( "title" => "$type", "body" => "$text_message","icon" => "icon.png", "click_action" => "http://shareurcodes.com")); 
 	$data_string = json_encode($data); 
 	echo "The Json Data : ".$data_string; 
